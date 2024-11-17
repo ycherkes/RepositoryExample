@@ -1,4 +1,4 @@
-﻿namespace QuerySpecification.IntegrationTests.Model;
+﻿namespace QueryHolder.IntegrationTests.Model;
 
 public class Product
 {

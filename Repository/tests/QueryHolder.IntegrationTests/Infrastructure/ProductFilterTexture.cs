@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace QuerySpecification.IntegrationTests.Infrastructure;
+namespace QueryHolder.IntegrationTests.Infrastructure;
 
 public class ProductFilterFixture : IDisposable
 {

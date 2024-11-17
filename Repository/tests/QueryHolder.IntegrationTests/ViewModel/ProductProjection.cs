@@ -1,4 +1,4 @@
-﻿namespace QuerySpecification.IntegrationTests.ViewModel;
+﻿namespace QueryHolder.IntegrationTests.ViewModel;
 
 public class ProductProjection
 {

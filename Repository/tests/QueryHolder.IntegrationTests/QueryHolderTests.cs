@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QuerySpecification.IntegrationTests.Infrastructure;
-using QuerySpecification.IntegrationTests.Model;
-using QuerySpecification.IntegrationTests.ViewModel;
+using QueryHolder.IntegrationTests.Infrastructure;
+using QueryHolder.IntegrationTests.Model;
+using QueryHolder.IntegrationTests.ViewModel;
 
-namespace QuerySpecification.IntegrationTests;
+namespace QueryHolder.IntegrationTests;
 
-public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixture<ProductFilterFixture>
+public class QueryHolderTests(ProductFilterFixture fixture) : IClassFixture<ProductFilterFixture>
 {
     [Fact]
-    public void QuerySpecification()
+    public void Query()
     {
         // Arrange
-        IQuerySpecification<Product> bananasOrApplesOrderedByPrice = new BananasOrApplesOrderedByPrice();
+        IQueryHolder<Product> bananasOrApplesOrderedByPrice = new BananasOrApplesOrderedByPrice();
 
         // Act
         var bananasOrApples = bananasOrApplesOrderedByPrice.Apply(fixture.Context.Products).ToList();
@@ -37,10 +37,10 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     }
 
     [Fact]
-    public void QuerySpecificationProjected()
+    public void QueryProjected()
     {
         // Arrange
-        IQuerySpecification<Product, ProductProjection> bananasOrApplesOrderedByPrice =
+        IQueryHolder<Product, ProductProjection> bananasOrApplesOrderedByPrice =
             new BananasOrApplesProjectedOrderedByPrice();
 
         // Act
@@ -65,11 +65,11 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     }
 
     [Fact]
-    public void FinalQuerySpecificationWithProjectedResult()
+    public void FinalQueryWithProjectedResult()
     {
         // this is the example for something with pagination like devexpress LoadResult
         // Arrange
-        IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery =
+        IFinalQueryHolder<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery =
             new BananasOrApplesProjectedOrderedByPriceResult();
 
         // Act
@@ -94,11 +94,11 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     }
 
     [Fact]
-    public void FinalQuerySpecificationWithProjectedResultExtensionMethod()
+    public void FinalQueryWithProjectedResultExtensionMethod()
     {
         // this is the example for something with pagination like devexpress LoadResult
         // Arrange
-        IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery =
+        IFinalQueryHolder<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery =
             new BananasOrApplesProjectedOrderedByPriceResult();
 
         // Act
@@ -123,10 +123,10 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     }
 
     [Fact]
-    public void BananasOrApplesProjectedOrderedByPriceFirstOrDefaultFinal()
+    public void FinalBananasOrApplesProjectedOrderedByPriceFirstOrDefault()
     {
         // Arrange
-        IFinalQuerySpecification<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery =
+        IFinalQueryHolder<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery =
             new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
 
         // Act
@@ -142,10 +142,10 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     }
 
     [Fact]
-    public async Task BananasOrApplesProjectedOrderedByPriceFirstOrDefaultFinalAsync()
+    public async Task FinalAsyncBananasOrApplesProjectedOrderedByPriceFirstOrDefault()
     {
         // Arrange
-        IFinalQuerySpecificationAsync<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery =
+        IAsyncFinalQueryHolder<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery =
             new BananasOrApplesProjectedOrderedByPriceFirstOrDefaultAsync();
 
         // Act
@@ -161,7 +161,7 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     }
 }
 
-public class BananasOrApplesOrderedByPrice : IQuerySpecification<Product>
+public class BananasOrApplesOrderedByPrice : IQueryHolder<Product>
 {
     public IQueryable<Product> Apply(IQueryable<Product> query)
     {
@@ -170,7 +170,7 @@ public class BananasOrApplesOrderedByPrice : IQuerySpecification<Product>
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPrice : IQuerySpecification<Product, ProductProjection>
+public class BananasOrApplesProjectedOrderedByPrice : IQueryHolder<Product, ProductProjection>
 {
     public IQueryable<ProductProjection> Apply(IQueryable<Product> query)
     {
@@ -185,7 +185,7 @@ public class BananasOrApplesProjectedOrderedByPrice : IQuerySpecification<Produc
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPriceResult : IFinalQuerySpecification<Product, List<ProductProjection>>
+public class BananasOrApplesProjectedOrderedByPriceResult : IFinalQueryHolder<Product, List<ProductProjection>>
 {
     public List<ProductProjection> Apply(IQueryable<Product> query)
     {
@@ -200,7 +200,7 @@ public class BananasOrApplesProjectedOrderedByPriceResult : IFinalQuerySpecifica
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IFinalQuerySpecification<Product, ProductProjection?>
+public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IFinalQueryHolder<Product, ProductProjection?>
 {
     public ProductProjection? Apply(IQueryable<Product> query)
     {
@@ -215,7 +215,7 @@ public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IFinalQueryS
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultAsync : IFinalQuerySpecificationAsync<Product, ProductProjection?>
+public class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultAsync : IAsyncFinalQueryHolder<Product, ProductProjection?>
 {
     public async Task<ProductProjection?> ApplyAsync(IQueryable<Product> query, CancellationToken cancellationToken = default)
     {
@@ -230,35 +230,39 @@ public class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultAsync : IFinalQ
     }
 }
 
-public interface IQuerySpecification<T> : IQuerySpecification<T, T>;
+public interface IQueryHolder<T> : IQueryHolder<T, T>;
 
-public interface IQuerySpecification<in TSource, out TDest>
+public interface IQueryHolder<in TSource, out TDest>
 {
     IQueryable<TDest> Apply(IQueryable<TSource> query);
 }
 
-public interface IFinalQuerySpecification<in TSource, out TDest>
+public interface IFinalQueryHolder<in TSource, out TDest>
 {
     TDest Apply(IQueryable<TSource> query);
 }
 
-public interface IFinalQuerySpecificationAsync<in TSource, TDest>
+public interface IAsyncFinalQueryHolder<in TSource, TDest>
 {
     Task<TDest> ApplyAsync(IQueryable<TSource> query, CancellationToken cancellationToken = default);
 }
 
-public static class QuerySpecificationExtensions
+public static class QueryHolderExtensions
 {
-    public static IQueryable<T> ApplyQuery<T>(this IQueryable<T> source, IQuerySpecification<T> query)
+    public static IQueryable<T> ApplyQuery<T>(this IQueryable<T> source, IQueryHolder<T> query)
     {
         return query.Apply(source);
     }
-    public static IQueryable<TDest> ApplyQuery<TSource, TDest>(this IQueryable<TSource> source, IQuerySpecification<TSource, TDest> query)
+    public static IQueryable<TDest> ApplyQuery<TSource, TDest>(this IQueryable<TSource> source, IQueryHolder<TSource, TDest> query)
     {
         return query.Apply(source);
     }
-    public static TDest ApplyQuery<TSource, TDest>(this IQueryable<TSource> source, IFinalQuerySpecification<TSource, TDest> query)
+    public static TDest ApplyQuery<TSource, TDest>(this IQueryable<TSource> source, IFinalQueryHolder<TSource, TDest> query)
     {
         return query.Apply(source);
+    }
+    public static Task<TDest> ApplyQueryAsync<TSource, TDest>(this IQueryable<TSource> source, IAsyncFinalQueryHolder<TSource, TDest> query, CancellationToken cancellationToken = default)
+    {
+        return query.ApplyAsync(source, cancellationToken);
     }
 }

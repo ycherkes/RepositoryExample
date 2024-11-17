@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.IntegrationTests", "tests\Repository.IntegrationTests\Repository.IntegrationTests.csproj", "{13628080-1CA4-42E1-A426-57202293ACD0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuerySpecification.IntegrationTests", "tests\QuerySpecification.IntegrationTests\QuerySpecification.IntegrationTests.csproj", "{487D4D74-8DC2-4CA7-9968-DB5AD36101F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueryHolder.IntegrationTests", "tests\QueryHolder.IntegrationTests\QueryHolder.IntegrationTests.csproj", "{487D4D74-8DC2-4CA7-9968-DB5AD36101F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

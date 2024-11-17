@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QuerySpecification.IntegrationTests.Model;
+using QueryHolder.IntegrationTests.Model;
 
-namespace QuerySpecification.IntegrationTests.Infrastructure;
+namespace QueryHolder.IntegrationTests.Infrastructure;
 
 public class TestDbContext : DbContext
 {
