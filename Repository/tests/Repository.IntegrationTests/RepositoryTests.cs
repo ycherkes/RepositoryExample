@@ -9,10 +9,10 @@ namespace Repository.IntegrationTests
         private readonly ProductRepository _repository = new ProductRepository(fixture.Context);
 
         [Fact]
-        public void SpecificationWithRepositoryTest()
+        public void SpecificationWithRepository()
         {
             // Arrange
-            ICollectionQuerySpecification<Product> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesOrderedByPrice();
+            IQuerySpecification<Product> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesOrderedByPrice();
 
             // Act
             var bananasOrApples = _repository.GetList(bananasOrApplesOrderedByPriceSpec);
@@ -38,10 +38,10 @@ namespace Repository.IntegrationTests
         }
 
         [Fact]
-        public void SpecificationWithRepositoryProjectedTest()
+        public void SpecificationWithRepositoryProjected()
         {
             // Arrange
-            ICollectionQuerySpecification<Product, ProductProjection> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPrice();
+            IQuerySpecification<Product, ProductProjection> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPrice();
 
             // Act
             var bananasOrApples = _repository.GetList(bananasOrApplesOrderedByPriceSpec);
@@ -65,11 +65,11 @@ namespace Repository.IntegrationTests
         }
 
         [Fact]
-        public void SpecificationWithRepositoryProjectedResultTest()
+        public void SpecificationWithRepositoryProjectedResult()
         {
             // this is the example for something with pagination like devexpress LoadResult
             // Arrange
-            IResultQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceResult();
+            IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceResult();
 
             // Act
             var bananasOrApples = _repository.Get(bananasOrApplesOrderedByPriceSpec);
@@ -93,10 +93,10 @@ namespace Repository.IntegrationTests
         }
 
         [Fact]
-        public void BananasOrApplesProjectedOrderedByPriceFirstOrDefaultResultTest()
+        public void BananasOrApplesProjectedOrderedByPriceFirstOrDefaultResult()
         {
             // Arrange
-            IResultQuerySpecification<Product, ProductProjection?> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
+            IFinalQuerySpecification<Product, ProductProjection?> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
 
             // Act
             var bananaOrAppleFirst = _repository.Get(bananasOrApplesOrderedByPriceSpec);
@@ -113,7 +113,7 @@ namespace Repository.IntegrationTests
     
 }
 
-    public class BananasOrApplesOrderedByPrice : ICollectionQuerySpecification<Product>
+    public class BananasOrApplesOrderedByPrice : IQuerySpecification<Product>
     {
         public IQueryable<Product> Apply(IQueryable<Product> query)
         {
@@ -122,7 +122,7 @@ namespace Repository.IntegrationTests
         }
     }
 
-    public class BananasOrApplesProjectedOrderedByPrice : ICollectionQuerySpecification<Product, ProductProjection>
+    public class BananasOrApplesProjectedOrderedByPrice : IQuerySpecification<Product, ProductProjection>
     {
         public IQueryable<ProductProjection> Apply(IQueryable<Product> query)
         {
@@ -137,7 +137,7 @@ namespace Repository.IntegrationTests
         }
     }
 
-    public class BananasOrApplesProjectedOrderedByPriceResult : IResultQuerySpecification<Product, List<ProductProjection>>
+    public class BananasOrApplesProjectedOrderedByPriceResult : IFinalQuerySpecification<Product, List<ProductProjection>>
     {
         public List<ProductProjection> Apply(IQueryable<Product> query)
         {
@@ -152,7 +152,7 @@ namespace Repository.IntegrationTests
         }
     }
 
-    public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IResultQuerySpecification<Product, ProductProjection?>
+    public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IFinalQuerySpecification<Product, ProductProjection?>
     {
         public ProductProjection? Apply(IQueryable<Product> query)
         {
@@ -167,14 +167,14 @@ namespace Repository.IntegrationTests
         }
     }
 
-    public interface ICollectionQuerySpecification<T> : ICollectionQuerySpecification<T, T>;
+    public interface IQuerySpecification<T> : IQuerySpecification<T, T>;
 
-    public interface ICollectionQuerySpecification<in TSource, out TDest>
+    public interface IQuerySpecification<in TSource, out TDest>
     {
         IQueryable<TDest> Apply(IQueryable<TSource> query);
     }
 
-    public interface IResultQuerySpecification<in TSource, out TDest>
+    public interface IFinalQuerySpecification<in TSource, out TDest>
     {
         TDest Apply(IQueryable<TSource> query);
     }
@@ -187,12 +187,12 @@ namespace Repository.IntegrationTests
         //    return specification.Apply(context.Products).ToList();
         //}
 
-        public List<TProjection> GetList<TProjection>(ICollectionQuerySpecification<Product, TProjection> specification)
+        public List<TProjection> GetList<TProjection>(IQuerySpecification<Product, TProjection> specification)
         {
             return specification.Apply(context.Products).ToList();
         }
 
-        public TResult Get<TResult>(IResultQuerySpecification<Product, TResult> specification)
+        public TResult Get<TResult>(IFinalQuerySpecification<Product, TResult> specification)
         {
             return specification.Apply(context.Products);
         }
