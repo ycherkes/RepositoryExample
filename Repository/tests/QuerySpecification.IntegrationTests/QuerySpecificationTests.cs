@@ -1,4 +1,5 @@
-﻿using QuerySpecification.IntegrationTests.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
+using QuerySpecification.IntegrationTests.Infrastructure;
 using QuerySpecification.IntegrationTests.Model;
 using QuerySpecification.IntegrationTests.ViewModel;
 
@@ -39,7 +40,8 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     public void QuerySpecificationProjected()
     {
         // Arrange
-        IQuerySpecification<Product, ProductProjection> bananasOrApplesOrderedByPrice = new BananasOrApplesProjectedOrderedByPrice();
+        IQuerySpecification<Product, ProductProjection> bananasOrApplesOrderedByPrice =
+            new BananasOrApplesProjectedOrderedByPrice();
 
         // Act
         var bananasOrApples = bananasOrApplesOrderedByPrice.Apply(fixture.Context.Products).ToList();
@@ -67,7 +69,8 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     {
         // this is the example for something with pagination like devexpress LoadResult
         // Arrange
-        IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery = new BananasOrApplesProjectedOrderedByPriceResult();
+        IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery =
+            new BananasOrApplesProjectedOrderedByPriceResult();
 
         // Act
         var bananasOrApples = bananasOrApplesOrderedByPriceFinalQuery.Apply(fixture.Context.Products);
@@ -95,7 +98,8 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     {
         // this is the example for something with pagination like devexpress LoadResult
         // Arrange
-        IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery = new BananasOrApplesProjectedOrderedByPriceResult();
+        IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceFinalQuery =
+            new BananasOrApplesProjectedOrderedByPriceResult();
 
         // Act
         var bananasOrApples = fixture.Context.Products.ApplyQuery(bananasOrApplesOrderedByPriceFinalQuery);
@@ -122,10 +126,30 @@ public class QuerySpecificationTests(ProductFilterFixture fixture) : IClassFixtu
     public void BananasOrApplesProjectedOrderedByPriceFirstOrDefaultFinal()
     {
         // Arrange
-        IFinalQuerySpecification<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery = new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
+        IFinalQuerySpecification<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery =
+            new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
 
         // Act
         var bananaOrAppleFirst = bananasOrApplesOrderedByPriceFinalQuery.Apply(fixture.Context.Products);
+
+        // Assert
+        Assert.Equivalent(new
+        {
+            Name = "Apple",
+            Price = 10F,
+            CategoryName = "Fruit"
+        }, bananaOrAppleFirst);
+    }
+
+    [Fact]
+    public async Task BananasOrApplesProjectedOrderedByPriceFirstOrDefaultFinalAsync()
+    {
+        // Arrange
+        IFinalQuerySpecificationAsync<Product, ProductProjection?> bananasOrApplesOrderedByPriceFinalQuery =
+            new BananasOrApplesProjectedOrderedByPriceFirstOrDefaultAsync();
+
+        // Act
+        var bananaOrAppleFirst = await bananasOrApplesOrderedByPriceFinalQuery.ApplyAsync(fixture.Context.Products);
 
         // Assert
         Assert.Equivalent(new
@@ -191,6 +215,21 @@ public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IFinalQueryS
     }
 }
 
+public class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultAsync : IFinalQuerySpecificationAsync<Product, ProductProjection?>
+{
+    public async Task<ProductProjection?> ApplyAsync(IQueryable<Product> query, CancellationToken cancellationToken = default)
+    {
+        return await query.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+            .OrderBy(p => p.Price)
+            .Select(x => new ProductProjection
+            {
+                Name = x.Name,
+                Price = x.Price,
+                CategoryName = x.Category.Name
+            }).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+    }
+}
+
 public interface IQuerySpecification<T> : IQuerySpecification<T, T>;
 
 public interface IQuerySpecification<in TSource, out TDest>
@@ -201,6 +240,11 @@ public interface IQuerySpecification<in TSource, out TDest>
 public interface IFinalQuerySpecification<in TSource, out TDest>
 {
     TDest Apply(IQueryable<TSource> query);
+}
+
+public interface IFinalQuerySpecificationAsync<in TSource, TDest>
+{
+    Task<TDest> ApplyAsync(IQueryable<TSource> query, CancellationToken cancellationToken = default);
 }
 
 public static class QuerySpecificationExtensions
