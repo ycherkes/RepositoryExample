@@ -1,4 +1,6 @@
-﻿using Repository.IntegrationTests.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.IntegrationTests;
+using Repository.IntegrationTests.Infrastructure;
 using Repository.IntegrationTests.Model;
 using Repository.IntegrationTests.ViewModel;
 
@@ -6,16 +8,16 @@ namespace Repository.IntegrationTests
 {
     public class RepositoryTests(ProductFilterFixture fixture) : IClassFixture<ProductFilterFixture>
     {
-        private readonly ProductRepository _repository = new ProductRepository(fixture.Context);
+        private readonly IRepository _repository = new Repository(fixture.Context);
 
         [Fact]
-        public void SpecificationWithRepository()
+        public async Task QueryWithRepository()
         {
             // Arrange
-            IQuerySpecification<Product> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesOrderedByPrice();
+            IQuery<Product> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesOrderedByPrice();
 
             // Act
-            var bananasOrApples = _repository.GetList(bananasOrApplesOrderedByPriceSpec);
+            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new[]
@@ -38,13 +40,13 @@ namespace Repository.IntegrationTests
         }
 
         [Fact]
-        public void SpecificationWithRepositoryProjected()
+        public async Task QueryWithRepositoryProjected()
         {
             // Arrange
-            IQuerySpecification<Product, ProductProjection> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPrice();
+            IQuery<Product, ProductProjection> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPrice();
 
             // Act
-            var bananasOrApples = _repository.GetList(bananasOrApplesOrderedByPriceSpec);
+            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new[]
@@ -65,14 +67,14 @@ namespace Repository.IntegrationTests
         }
 
         [Fact]
-        public void SpecificationWithRepositoryProjectedResult()
+        public async Task QueryExecutorWithRepositoryProjectedResult()
         {
             // this is the example for something with pagination like devexpress LoadResult
             // Arrange
-            IFinalQuerySpecification<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceResult();
+            IQueryExecutor<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceResult();
 
             // Act
-            var bananasOrApples = _repository.Get(bananasOrApplesOrderedByPriceSpec);
+            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new[]
@@ -93,107 +95,78 @@ namespace Repository.IntegrationTests
         }
 
         [Fact]
-        public void BananasOrApplesProjectedOrderedByPriceFirstOrDefaultResult()
+        public async Task BananasOrApplesProjectedOrderedByPriceFirstOrDefaultResult()
         {
             // Arrange
-            IFinalQuerySpecification<Product, ProductProjection?> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
+            var bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
 
             // Act
-            var bananaOrAppleFirst = _repository.Get(bananasOrApplesOrderedByPriceSpec);
+            var bananaOrAppleFirst = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new
-                {
-                    Name = "Apple",
-                    Price = 10F,
-                    CategoryName = "Fruit"
-                }, bananaOrAppleFirst);
+            {
+                Name = "Apple",
+                Price = 10F,
+                CategoryName = "Fruit"
+            }, bananaOrAppleFirst);
         }
     }
-    
+
 }
 
-    public class BananasOrApplesOrderedByPrice : IQuerySpecification<Product>
+public class BananasOrApplesOrderedByPrice : IQuery<Product>
+{
+    public IQueryable<Product> Invoke(IQueryable<Product> queryable)
     {
-        public IQueryable<Product> Apply(IQueryable<Product> query)
+        return queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+            .OrderBy(p => p.Price);
+    }
+}
+
+public class BananasOrApplesProjectedOrderedByPrice : IQuery<Product, ProductProjection>
+{
+    public IQueryable<ProductProjection> Invoke(IQueryable<Product> queryable)
+    {
+        return queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+            .OrderBy(p => p.Price)
+            .Select(x => new ProductProjection
+            {
+                Name = x.Name,
+                Price = x.Price,
+                CategoryName = x.Category.Name
+            });
+    }
+}
+
+public class BananasOrApplesProjectedOrderedByPriceResult : IQueryExecutor<Product, List<ProductProjection>>
+{
+    public async Task<List<ProductProjection>> InvokeAsync(IQueryable<Product> queryable, CancellationToken cancellationToken)
+    {
+        return await queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+            .OrderBy(p => p.Price)
+            .Select(x => new ProductProjection
+            {
+                Name = x.Name,
+                Price = x.Price,
+                CategoryName = x.Category.Name
+            }).ToListAsync(cancellationToken: cancellationToken);
+    }
+}
+
+public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IQueryExecutor<Product, ProductProjection?>
+{
+    public async Task<ProductProjection?> InvokeAsync(IQueryable<Product> queryable, CancellationToken cancellationToken)
+    {
+        return await queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+        .OrderBy(p => p.Price)
+        .Select(x => new ProductProjection
         {
-            return query.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
-                .OrderBy(p => p.Price);
-        }
+            Name = x.Name,
+            Price = x.Price,
+            CategoryName = x.Category.Name
+        }).FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
-
-    public class BananasOrApplesProjectedOrderedByPrice : IQuerySpecification<Product, ProductProjection>
-    {
-        public IQueryable<ProductProjection> Apply(IQueryable<Product> query)
-        {
-            return query.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
-                .OrderBy(p => p.Price)
-                .Select(x => new ProductProjection
-                {
-                    Name = x.Name,
-                    Price = x.Price,
-                    CategoryName = x.Category.Name
-                });
-        }
-    }
-
-    public class BananasOrApplesProjectedOrderedByPriceResult : IFinalQuerySpecification<Product, List<ProductProjection>>
-    {
-        public List<ProductProjection> Apply(IQueryable<Product> query)
-        {
-            return query.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
-                .OrderBy(p => p.Price)
-                .Select(x => new ProductProjection
-                {
-                    Name = x.Name,
-                    Price = x.Price,
-                    CategoryName = x.Category.Name
-                }).ToList();
-        }
-    }
-
-    public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IFinalQuerySpecification<Product, ProductProjection?>
-    {
-        public ProductProjection? Apply(IQueryable<Product> query)
-        {
-            return query.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
-                .OrderBy(p => p.Price)
-                .Select(x => new ProductProjection
-                {
-                    Name = x.Name,
-                    Price = x.Price,
-                    CategoryName = x.Category.Name
-                }).FirstOrDefault();
-        }
-    }
-
-    public interface IQuerySpecification<T> : IQuerySpecification<T, T>;
-
-    public interface IQuerySpecification<in TSource, out TDest>
-    {
-        IQueryable<TDest> Apply(IQueryable<TSource> query);
-    }
-
-    public interface IFinalQuerySpecification<in TSource, out TDest>
-    {
-        TDest Apply(IQueryable<TSource> query);
-    }
+}
 
 
-    public class ProductRepository(TestDbContext context)
-    {
-        //public List<Product> GetList(IQuerySpecification<Product> specification)
-        //{
-        //    return specification.Apply(context.Products).ToList();
-        //}
-
-        public List<TProjection> GetList<TProjection>(IQuerySpecification<Product, TProjection> specification)
-        {
-            return specification.Apply(context.Products).ToList();
-        }
-
-        public TResult Get<TResult>(IFinalQuerySpecification<Product, TResult> specification)
-        {
-            return specification.Apply(context.Products);
-        }
-    }
