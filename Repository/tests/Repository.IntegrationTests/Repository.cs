@@ -3,13 +3,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
-using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Repository.IntegrationTests;
 
 /// <inheritdoc />
-[method: DebuggerStepThrough]
 public class Repository(DbContext context) : IRepository
 {
     public EntityEntry<TEntity> Add<TEntity>(TEntity entity) where TEntity : class
@@ -57,62 +55,62 @@ public class Repository(DbContext context) : IRepository
         return context.Entry(entity);
     }
 
-    public Task<List<TEntity>> GetAsync<TEntity>(CancellationToken cancellationToken = default) where TEntity : class
+    public async Task<List<TEntity>> GetAsync<TEntity>(CancellationToken cancellationToken = default) where TEntity : class
     {
-        return context.Set<TEntity>().ToListAsync(cancellationToken);
+        return await context.Set<TEntity>().ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<List<TEntity>> GetAsync<TEntity>(IQuery<TEntity> query, CancellationToken cancellationToken = default)
+    public async Task<List<TEntity>> GetAsync<TEntity>(IQuery<TEntity> query, CancellationToken cancellationToken = default)
         where TEntity : class
     {
-        return query.Invoke(context.Set<TEntity>()).ToListAsync(cancellationToken);
+        return await query.Invoke(context.Set<TEntity>()).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<List<TResultItem>> GetAsync<TEntity, TResultItem>(IQuery<TEntity, TResultItem> query, CancellationToken cancellationToken = default) where TEntity : class
+    public async Task<List<TResultItem>> GetAsync<TEntity, TResultItem>(IQuery<TEntity, TResultItem> query, CancellationToken cancellationToken = default) where TEntity : class
     {
-        return query.Invoke(context.Set<TEntity>()).ToListAsync(cancellationToken);
+        return await query.Invoke(context.Set<TEntity>()).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<List<TResultItem>> GetAsync<TResultItem>(IContextQuery<TResultItem> query, CancellationToken cancellationToken = default)
+    public async Task<List<TResultItem>> GetAsync<TResultItem>(IContextQuery<TResultItem> query, CancellationToken cancellationToken = default)
     {
-        return query.Invoke(context).ToListAsync(cancellationToken);
+        return await query.Invoke(context).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<TResult> GetAsync<TEntity, TResult>(IQueryExecutor<TEntity, TResult> query, CancellationToken cancellationToken = default) where TEntity : class
+    public async Task<TResult> GetAsync<TEntity, TResult>(IQueryExecutor<TEntity, TResult> query, CancellationToken cancellationToken = default) where TEntity : class
     {
-        return query.InvokeAsync(context.Set<TEntity>(), cancellationToken);
+        return await query.InvokeAsync(context.Set<TEntity>(), cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<TResult> GetAsync<TResult>(IContextQueryExecutor<TResult> query, CancellationToken cancellationToken = default)
+    public async Task<TResult> GetAsync<TResult>(IContextQueryExecutor<TResult> query, CancellationToken cancellationToken = default)
     {
-        return query.InvokeAsync(context, cancellationToken);
+        return await query.InvokeAsync(context, cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<int> ExecuteDeleteAsync<TEntity>(IQuery<TEntity> query, CancellationToken cancellationToken = default)
+    public async Task<int> ExecuteDeleteAsync<TEntity>(IQuery<TEntity> query, CancellationToken cancellationToken = default)
         where TEntity : class
     {
-        return query.Invoke(context.Set<TEntity>()).ExecuteDeleteAsync(cancellationToken: cancellationToken);
+        return await query.Invoke(context.Set<TEntity>()).ExecuteDeleteAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<int> ExecuteUpdateAsync<TEntity>(IQuery<TEntity> query,
+    public async Task<int> ExecuteUpdateAsync<TEntity>(IQuery<TEntity> query,
         Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls,
         CancellationToken cancellationToken = default) where TEntity : class
     {
-        return query.Invoke(context.Set<TEntity>()).ExecuteUpdateAsync(setPropertyCalls, cancellationToken);
+        return await query.Invoke(context.Set<TEntity>()).ExecuteUpdateAsync(setPropertyCalls, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await context.SaveChangesAsync(cancellationToken);
+        return await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        return await context.Database.BeginTransactionAsync(cancellationToken);
+        return await context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
     {
-        return await context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
+        return await context.Database.BeginTransactionAsync(isolationLevel, cancellationToken).ConfigureAwait(false);
     }
 }
