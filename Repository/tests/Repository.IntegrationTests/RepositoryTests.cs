@@ -14,10 +14,10 @@ namespace Repository.IntegrationTests
         public async Task QueryWithRepository()
         {
             // Arrange
-            IQuery<Product> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesOrderedByPrice();
+            IQuery<Product> bananasOrApplesOrderedByPriceQuery = new BananasOrApplesOrderedByPriceQuery();
 
             // Act
-            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
+            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceQuery, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new[]
@@ -43,10 +43,10 @@ namespace Repository.IntegrationTests
         public async Task QueryWithRepositoryProjected()
         {
             // Arrange
-            IQuery<Product, ProductProjection> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPrice();
+            IQuery<Product, ProductProjection> bananasOrApplesOrderedByPriceQuery = new BananasOrApplesProjectedOrderedByPriceQuery();
 
             // Act
-            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
+            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceQuery, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new[]
@@ -71,10 +71,10 @@ namespace Repository.IntegrationTests
         {
             // this is the example for something with pagination like devexpress LoadResult
             // Arrange
-            IQueryExecutor<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceResult();
+            IQueryExecutor<Product, List<ProductProjection>> bananasOrApplesOrderedByPriceQuery = new BananasOrApplesProjectedOrderedByPriceResultQuery();
 
             // Act
-            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
+            var bananasOrApples = await _repository.GetAsync(bananasOrApplesOrderedByPriceQuery, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new[]
@@ -98,10 +98,10 @@ namespace Repository.IntegrationTests
         public async Task BananasOrApplesProjectedOrderedByPriceFirstOrDefaultResult()
         {
             // Arrange
-            var bananasOrApplesOrderedByPriceSpec = new BananasOrApplesProjectedOrderedByPriceFirstOrDefault();
+            var bananasOrApplesOrderedByPriceQuery = new BananasOrApplesProjectedOrderedByPriceFirstOrDefaultQuery();
 
             // Act
-            var bananaOrAppleFirst = await _repository.GetAsync(bananasOrApplesOrderedByPriceSpec, CancellationToken.None);
+            var bananaOrAppleFirst = await _repository.GetAsync(bananasOrApplesOrderedByPriceQuery, CancellationToken.None);
 
             // Assert
             Assert.Equivalent(new
@@ -115,7 +115,7 @@ namespace Repository.IntegrationTests
 
 }
 
-public class BananasOrApplesOrderedByPrice : IQuery<Product>
+internal sealed class BananasOrApplesOrderedByPriceQuery : IQuery<Product>
 {
     public IQueryable<Product> Invoke(IQueryable<Product> queryable)
     {
@@ -124,7 +124,7 @@ public class BananasOrApplesOrderedByPrice : IQuery<Product>
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPrice : IQuery<Product, ProductProjection>
+internal sealed class BananasOrApplesProjectedOrderedByPriceQuery : IQuery<Product, ProductProjection>
 {
     public IQueryable<ProductProjection> Invoke(IQueryable<Product> queryable)
     {
@@ -139,7 +139,7 @@ public class BananasOrApplesProjectedOrderedByPrice : IQuery<Product, ProductPro
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPriceResult : IQueryExecutor<Product, List<ProductProjection>>
+internal sealed class BananasOrApplesProjectedOrderedByPriceResultQuery : IQueryExecutor<Product, List<ProductProjection>>
 {
     public async Task<List<ProductProjection>> InvokeAsync(IQueryable<Product> queryable, CancellationToken cancellationToken)
     {
@@ -154,7 +154,7 @@ public class BananasOrApplesProjectedOrderedByPriceResult : IQueryExecutor<Produ
     }
 }
 
-public class BananasOrApplesProjectedOrderedByPriceFirstOrDefault : IQueryExecutor<Product, ProductProjection?>
+internal sealed class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultQuery : IQueryExecutor<Product, ProductProjection?>
 {
     public async Task<ProductProjection?> InvokeAsync(IQueryable<Product> queryable, CancellationToken cancellationToken)
     {
