@@ -93,7 +93,7 @@ public class Repository(DbContext context) : IRepository
     }
 
     public async Task<int> ExecuteUpdateAsync<TEntity>(IQuery<TEntity> query,
-        Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls,
+        Action<UpdateSettersBuilder<TEntity>> setPropertyCalls,
         CancellationToken cancellationToken = default) where TEntity : class
     {
         return await query.Invoke(context.Set<TEntity>()).ExecuteUpdateAsync(setPropertyCalls, cancellationToken).ConfigureAwait(false);

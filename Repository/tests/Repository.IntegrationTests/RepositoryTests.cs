@@ -117,18 +117,20 @@ namespace Repository.IntegrationTests
 
 internal sealed class BananasOrApplesOrderedByPriceQuery : IQuery<Product>
 {
-    public IQueryable<Product> Invoke(IQueryable<Product> queryable)
+    public IQueryable<Product> Invoke(IQueryable<Product> products)
     {
-        return queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+        return products
+            .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
             .OrderBy(p => p.Price);
     }
 }
 
 internal sealed class BananasOrApplesProjectedOrderedByPriceQuery : IQuery<Product, ProductProjection>
 {
-    public IQueryable<ProductProjection> Invoke(IQueryable<Product> queryable)
+    public IQueryable<ProductProjection> Invoke(IQueryable<Product> products)
     {
-        return queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+        return products
+            .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
             .OrderBy(p => p.Price)
             .Select(x => new ProductProjection
             {
@@ -141,9 +143,10 @@ internal sealed class BananasOrApplesProjectedOrderedByPriceQuery : IQuery<Produ
 
 internal sealed class BananasOrApplesProjectedOrderedByPriceResultQuery : IQueryExecutor<Product, List<ProductProjection>>
 {
-    public async Task<List<ProductProjection>> InvokeAsync(IQueryable<Product> queryable, CancellationToken cancellationToken)
+    public async Task<List<ProductProjection>> InvokeAsync(IQueryable<Product> products, CancellationToken cancellationToken)
     {
-        return await queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
+        return await products
+            .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
             .OrderBy(p => p.Price)
             .Select(x => new ProductProjection
             {
@@ -156,16 +159,17 @@ internal sealed class BananasOrApplesProjectedOrderedByPriceResultQuery : IQuery
 
 internal sealed class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultQuery : IQueryExecutor<Product, ProductProjection?>
 {
-    public async Task<ProductProjection?> InvokeAsync(IQueryable<Product> queryable, CancellationToken cancellationToken)
+    public async Task<ProductProjection?> InvokeAsync(IQueryable<Product> products, CancellationToken cancellationToken)
     {
-        return await queryable.Where(static x => new[] { "Banana", "Apple" }.Contains(x.Name))
-        .OrderBy(p => p.Price)
-        .Select(x => new ProductProjection
-        {
-            Name = x.Name,
-            Price = x.Price,
-            CategoryName = x.Category.Name
-        }).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        return await products
+            .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
+            .OrderBy(p => p.Price)
+            .Select(x => new ProductProjection
+            {
+                Name = x.Name,
+                Price = x.Price,
+                CategoryName = x.Category.Name
+            }).FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 }
 

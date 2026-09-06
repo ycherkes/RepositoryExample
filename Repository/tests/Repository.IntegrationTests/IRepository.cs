@@ -63,7 +63,7 @@ public interface IRepository
     /// <summary>
     ///     Asynchronously updates database rows for the entity instances which match the LINQ query from the database.
     /// </summary>
-    Task<int> ExecuteUpdateAsync<TEntity>(IQuery<TEntity> query, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls, CancellationToken cancellationToken = default) where TEntity : class;
+    Task<int> ExecuteUpdateAsync<TEntity>(IQuery<TEntity> query, Action<UpdateSettersBuilder<TEntity>> setPropertyCalls, CancellationToken cancellationToken = default) where TEntity : class;
 
     /// <summary>
     /// Saves all changes made in this context to the database asynchronously.
