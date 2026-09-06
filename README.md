@@ -25,3 +25,36 @@ This is a lightweight take on the same general problem addressed by query specif
 - **Decouples DbContext:** Your services depend on an `IRepository` interface.
 - **Reusable Queries:** Query definitions are separate classes and can be shared across services.
 - **Better testability:** Queries can be tested independently and repository methods mocked.
+
+## In 30 seconds
+
+Define a query object that contains the filtering, ordering, and projection:
+
+```csharp
+public sealed class ProductsByCategoryQuery(string category)
+    : IQuery<Product, ProductSummary>
+{
+    public IQueryable<ProductSummary> Apply(IQueryable<Product> products) =>
+        products
+            .Where(product => product.Category.Name == category)
+            .OrderBy(product => product.Name)
+            .Select(product => new ProductSummary(
+                product.Id,
+                product.Name,
+                product.Price));
+}
+
+public sealed record ProductSummary(int Id, string Name, decimal Price);
+```
+
+Execute it through the repository; the caller never receives an unexecuted
+`IQueryable`:
+
+```csharp
+var products = await repository.GetAsync(
+    new ProductsByCategoryQuery("Fruit"),
+    cancellationToken);
+```
+
+The query can be reused wherever that read is needed, while the repository
+remains responsible for supplying the entity set and materializing the result.

@@ -11,7 +11,7 @@ public interface IQuery<TEntity> : IQuery<TEntity, TEntity>;
 public interface IQuery<in TEntity, out TResultItem>
 {
     /// <summary>Applies the projection to a queryable source of entities.</summary>
-    IQueryable<TResultItem> Invoke(IQueryable<TEntity> queryable);
+    IQueryable<TResultItem> Apply(IQueryable<TEntity> queryable);
 }
 
 /// <summary>Represents a materializing query that returns the same type as the source entity.</summary>
@@ -23,7 +23,7 @@ public interface IQueryExecutor<TEntity> : IQueryExecutor<TEntity, TEntity>;
 public interface IQueryExecutor<in TEntity, TResult>
 {
     /// <summary>Applies the query asynchronously and materializes the result.</summary>
-    Task<TResult> InvokeAsync(IQueryable<TEntity> queryable, CancellationToken cancellationToken);
+    Task<TResult> ApplyAsync(IQueryable<TEntity> queryable, CancellationToken cancellationToken);
 }
 
 /// <summary>Represents a projection query that uses the entire database context.</summary>
@@ -31,7 +31,7 @@ public interface IQueryExecutor<in TEntity, TResult>
 public interface IContextQuery<out TResult>
 {
     /// <summary>Applies the query to the full <see cref="DbContext"/>.</summary>
-    IQueryable<TResult> Invoke(DbContext context);
+    IQueryable<TResult> Apply(DbContext context);
 }
 
 /// <summary>Represents a materializing query that uses the entire database context.</summary>
@@ -39,5 +39,5 @@ public interface IContextQuery<out TResult>
 public interface IContextQueryExecutor<TResult>
 {
     /// <summary>Applies the query asynchronously to the full <see cref="DbContext"/> and materializes the result.</summary>
-    Task<TResult> InvokeAsync(DbContext context, CancellationToken cancellationToken);
+    Task<TResult> ApplyAsync(DbContext context, CancellationToken cancellationToken);
 }

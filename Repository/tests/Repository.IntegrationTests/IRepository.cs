@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
-using System.Linq.Expressions;
 
 namespace Repository.IntegrationTests;
 

@@ -117,7 +117,7 @@ namespace Repository.IntegrationTests
 
 internal sealed class BananasOrApplesOrderedByPriceQuery : IQuery<Product>
 {
-    public IQueryable<Product> Invoke(IQueryable<Product> products)
+    public IQueryable<Product> Apply(IQueryable<Product> products)
     {
         return products
             .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
@@ -127,7 +127,7 @@ internal sealed class BananasOrApplesOrderedByPriceQuery : IQuery<Product>
 
 internal sealed class BananasOrApplesProjectedOrderedByPriceQuery : IQuery<Product, ProductProjection>
 {
-    public IQueryable<ProductProjection> Invoke(IQueryable<Product> products)
+    public IQueryable<ProductProjection> Apply(IQueryable<Product> products)
     {
         return products
             .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
@@ -143,7 +143,7 @@ internal sealed class BananasOrApplesProjectedOrderedByPriceQuery : IQuery<Produ
 
 internal sealed class BananasOrApplesProjectedOrderedByPriceResultQuery : IQueryExecutor<Product, List<ProductProjection>>
 {
-    public async Task<List<ProductProjection>> InvokeAsync(IQueryable<Product> products, CancellationToken cancellationToken)
+    public async Task<List<ProductProjection>> ApplyAsync(IQueryable<Product> products, CancellationToken cancellationToken)
     {
         return await products
             .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
@@ -159,7 +159,7 @@ internal sealed class BananasOrApplesProjectedOrderedByPriceResultQuery : IQuery
 
 internal sealed class BananasOrApplesProjectedOrderedByPriceFirstOrDefaultQuery : IQueryExecutor<Product, ProductProjection?>
 {
-    public async Task<ProductProjection?> InvokeAsync(IQueryable<Product> products, CancellationToken cancellationToken)
+    public async Task<ProductProjection?> ApplyAsync(IQueryable<Product> products, CancellationToken cancellationToken)
     {
         return await products
             .Where(static x => new List<string> { "Banana", "Apple" }.Contains(x.Name))
