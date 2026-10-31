@@ -58,3 +58,31 @@ var products = await repository.GetAsync(
 
 The query can be reused wherever that read is needed, while the repository
 remains responsible for supplying the entity set and materializing the result.
+
+
+## Migrating from Ardalis.Specification 9.x
+
+This repository demonstrates a **minimal Query Object alternative** to
+[Ardalis.Specification](https://github.com/ardalis/Specification). It is **not an
+API-compatible fork**: use native LINQ in query objects rather than recreating
+the specification builder and evaluator.
+
+- [Ardalis migration guide](docs/ardalis-migration.md) — before/after examples,
+  paging and counting, CRUD/SaveChanges differences, search and post-processing.
+- [Feature compatibility matrix](docs/feature-compatibility.md) — native LINQ
+  replacements, intentional omissions, and verified vs unverified scenarios.
+- [Architecture and trade-offs](docs/architecture.md) — IQuery, IQueryExecutor,
+  IContextQuery and their execution boundaries.
+- [Run the SQLite parity tests](docs/testing.md) — .NET 10 commands, what
+  comparisons prove, and limits of provider-specific testing.
+
+The parity suite in
+[ArdalisMigrationParityTests.cs](Repository/tests/Repository.IntegrationTests/ArdalisMigrationParityTests.cs)
+uses the MIT-licensed **Ardalis.Specification.EntityFrameworkCore 9.3.1** in
+**tests only**. The existing query contracts and repository implementation
+remain dependency-free from Ardalis. GitHub Actions runs the comparison suite.
+
+**Important:** this is a thin abstraction **for EF Core**, not an ORM-neutral
+repository. Several interfaces intentionally expose EF types. Unlike Ardalis's
+built-in RepositoryBase CRUD methods, the example's Add/Update/Remove methods
+require an explicit SaveChangesAsync call.
