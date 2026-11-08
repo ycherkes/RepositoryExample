@@ -5,7 +5,7 @@ This repository ships two [Agent Skills](https://agentskills.io/) as portable Ma
 | Skill | Purpose | File |
 | --- | --- | --- |
 | `repositoryexample-query-objects` | Create/review native LINQ query objects with `IQuery`, `IQueryExecutor`, `IContextQuery`, or their context executors | [SKILL.md](../.agents/skills/repositoryexample-query-objects/SKILL.md) |
-| `migrate-ardalis-to-repositoryexample` | Migrate Ardalis.Specification 9.x queries, repository calls, and save semantics to RepositoryExample | [SKILL.md](../.agents/skills/migrate-ardalis-to-repositoryexample/SKILL.md) |
+| `migrate-ardalis-specification-to-repositoryexample` | Migrate Ardalis.Specification 9.x queries, repository calls, and save semantics to RepositoryExample | [SKILL.md](../.agents/skills/migrate-ardalis-specification-to-repositoryexample/SKILL.md) |
 
 These are **instructions for AI coding agents**, not C# runtime packages. They do not change the example's repository contracts or introduce an Ardalis dependency in production code.
 
@@ -21,7 +21,7 @@ npx skills add ycherkes/RepositoryExample
 npx skills add ycherkes/RepositoryExample --skill repositoryexample-query-objects
 
 # Or install only the Ardalis migration skill
-npx skills add ycherkes/RepositoryExample --skill migrate-ardalis-to-repositoryexample
+npx skills add ycherkes/RepositoryExample --skill migrate-ardalis-specification-to-repositoryexample
 ```
 
 The CLI lets you choose supported agents and installation scope. For a reproducible project setup, select project scope. The skills are stored in [`.agents/skills/`](../.agents/skills/) and are compatible with the [Agent Skills specification](https://agentskills.io/specification).
@@ -42,7 +42,7 @@ Ask the coding agent to apply a skill by name, or describe a matching task and l
 
 **Migrate an Ardalis specification**
 
-> Use `migrate-ardalis-to-repositoryexample` to replace ProductsPageSpec and its ListAsync/CountAsync callers. Preserve all filters, count before Skip/Take, ordering, tracking and SaveChanges boundaries. Add side-by-side SQLite parity tests before removing the Ardalis dependency.
+> Use `migrate-ardalis-specification-to-repositoryexample` to replace ProductsPageSpec and its ListAsync/CountAsync callers. Preserve all filters, count before Skip/Take, ordering, tracking and SaveChanges boundaries. Add side-by-side SQLite parity tests before removing the Ardalis dependency.
 
 ## Review / smoke checks
 
