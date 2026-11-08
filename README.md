@@ -76,11 +76,11 @@ The CLI discovers both skills and lets you select which to install. To install o
 npx skills add ycherkes/RepositoryExample --skill repositoryexample-query-objects
 
 # Migrate from Ardalis.Specification 9.x
-npx skills add ycherkes/RepositoryExample --skill migrate-ardalis-to-repositoryexample
+npx skills add ycherkes/RepositoryExample --skill migrate-ardalis-specification-to-repositoryexample
 ```
 
 - [`repositoryexample-query-objects`](.agents/skills/repositoryexample-query-objects/SKILL.md) teaches agents how to implement filters, DTO projections, aggregates, and pagination with the existing `IQuery`/`IQueryExecutor` contracts.
-- [`migrate-ardalis-to-repositoryexample`](.agents/skills/migrate-ardalis-to-repositoryexample/SKILL.md) guides migrations from Ardalis.Specification 9.x, including behavior-preserving checks for paging, tracking, and SaveChanges.
+- [`migrate-ardalis-specification-to-repositoryexample`](.agents/skills/migrate-ardalis-specification-to-repositoryexample/SKILL.md) guides migrations from Ardalis.Specification 9.x, including behavior-preserving checks for paging, tracking, and SaveChanges.
 
 The skill files live under [`.agents/skills/`](.agents/skills/). They instruct coding agents; they do not add the RepositoryExample C# interfaces to your project. See the [usage guide](docs/ai-skills.md) for example prompts and validation checks.
 
