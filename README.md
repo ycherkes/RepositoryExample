@@ -60,6 +60,17 @@ The query can be reused wherever that read is needed, while the repository
 remains responsible for supplying the entity set and materializing the result.
 
 
+
+## AI coding-agent skills
+
+This repository includes two reusable [Agent Skills](docs/ai-skills.md) for coding assistants:
+
+- [`repositoryexample-query-objects`](.agents/skills/repositoryexample-query-objects/SKILL.md): create EF Core query objects using the existing `IQuery`/`IQueryExecutor` contracts.
+- [`migrate-ardalis-to-repositoryexample`](.agents/skills/migrate-ardalis-to-repositoryexample/SKILL.md): migrate Ardalis.Specification 9.x with behavioral checks for paging, tracking, and SaveChanges.
+
+Codex discovers these skills under `.agents/skills/`. See [usage and example prompts](docs/ai-skills.md) for use inside this repository or a consuming application.
+
+
 ## Migrating from Ardalis.Specification 9.x
 
 This repository demonstrates a **minimal Query Object alternative** to
