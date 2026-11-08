@@ -9,13 +9,30 @@ This repository ships two [Agent Skills](https://agentskills.io/) as portable Ma
 
 These are **instructions for AI coding agents**, not C# runtime packages. They do not change the example's repository contracts or introduce an Ardalis dependency in production code.
 
-## Use the skills
+## Install the skills
 
-- **In this repository:** Codex discovers skills from `.agents/skills` at the repository root. Restart the agent if it does not pick up newly added skills.
-- **In another project:** copy the desired skill folder into that project's `.agents/skills/` (Codex). For other agents, use the skill location supported by your tooling; for example, Copilot supports `.github/skills/` and Claude supports `.claude/skills/`. Keep the folder name matching the `name` in the YAML frontmatter.
-- Ensure the target project contains or adapts the `IQuery`/`IRepository` contracts from this example. The skill alone does not add a library or install those interfaces.
+Run the [Skills CLI](https://github.com/vercel-labs/skills) from your application repository (requires Node.js/npm):
 
-You can ask the agent to apply a skill by name, or describe a matching task and let a skills-capable agent select it.
+```shell
+# Discover and install either or both skills
+npx skills add ycherkes/RepositoryExample
+
+# Or install only the query-authoring skill
+npx skills add ycherkes/RepositoryExample --skill repositoryexample-query-objects
+
+# Or install only the Ardalis migration skill
+npx skills add ycherkes/RepositoryExample --skill migrate-ardalis-to-repositoryexample
+```
+
+The CLI lets you choose supported agents and installation scope. For a reproducible project setup, select project scope. The skills are stored in [`.agents/skills/`](../.agents/skills/) and are compatible with the [Agent Skills specification](https://agentskills.io/specification).
+
+**In this repository:** supported agents, including Codex, can discover the skills directly from `.agents/skills/` without running the install command. Restart the coding agent if necessary after adding skills.
+
+**Manual option:** copy either skill folder to your coding agent's supported skills directory, retaining its `SKILL.md` and metadata.
+
+**Important:** these commands install *AI instructions*, not a NuGet library or the C# contracts. Your consumer project must already contain (or adapt) `IQuery`/`IRepository` from this example.
+
+Ask the coding agent to apply a skill by name, or describe a matching task and let a skills-capable agent select it.
 
 ## Sample prompts
 
